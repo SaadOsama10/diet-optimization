@@ -1,11 +1,28 @@
 import numpy as np
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.core.problem import Problem
+from pymoo.core.callback import Callback
+from pymoo.indicators.hv import HV
 from pymoo.optimize import minimize
 
 from src.database import get_food_data, get_nutrients_data, get_user_dri, get_user_preferences
 from src.chromosome import decode
 from src.objectives import evaluate
+
+
+class HVCallback(Callback):
+    def __init__(self, ref_point):
+        super().__init__()
+        self.ref_point = ref_point
+        self.hv_history = []
+
+    def notify(self, algorithm):
+        F = algorithm.opt.get("F")
+        if F is not None and len(F) > 0:
+            ind = HV(ref_point=self.ref_point)
+            self.hv_history.append(ind(F))
+        else:
+            self.hv_history.append(0)
 
 
 class DietProblem(Problem):
@@ -45,20 +62,23 @@ class DietProblem(Problem):
         out["F"] = np.array(F)
 
 
-def run_nsga2(user_id, pop_size=100, n_gen=200):
+def run_nsga2(user_id, pop_size=100, n_gen=200, track_hv=False):
     problem = DietProblem(user_id)
+    ref_point = np.array([0.0, 1000.0, 1000.0])
+    callback = HVCallback(ref_point) if track_hv else None
 
-    algorithm = NSGA2(
-        pop_size=pop_size,
-    )
+    algorithm = NSGA2(pop_size=pop_size)
 
     res = minimize(
         problem,
         algorithm,
         termination=('n_gen', n_gen),
+        callback=callback,
         verbose=True
     )
 
+    if track_hv:
+        return res, callback.hv_history
     return res
 
 

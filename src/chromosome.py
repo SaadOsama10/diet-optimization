@@ -59,6 +59,12 @@ def decode(breakfast, lunch_dinner, nutrients_data, dri):
     return selected_breakfast, selected_lunch, nutrients_total
 
 
+def check_diversity(selected_breakfast, selected_lunch, food_data, min_groups=4):
+    all_selected = selected_breakfast + selected_lunch
+    groups = set(food_data[fid]['foodGroupId'] for fid in all_selected)
+    return len(groups) >= min_groups
+
+
 def calculate_objectives(selected_breakfast, selected_lunch, food_data, user_preferences):
     all_selected = selected_breakfast + selected_lunch
     preference = sum(user_preferences.get(fid, food_data[fid]['preference']) for fid in all_selected)
