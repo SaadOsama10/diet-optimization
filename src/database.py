@@ -81,6 +81,27 @@ def get_user_preferences(user_id):
     conn.close()
     return {row['foodId']: row['preference'] for row in rows}
 
+
+def get_food_ids_for_user(user_id):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    non_vegetarian_groups = [2, 3, 15, 23, 28]
+
+    if user_id == 2:
+        format_strings = ','.join(['%s'] * len(non_vegetarian_groups))
+        cursor.execute(f"""
+            SELECT id FROM foods
+            WHERE foodGroupId NOT IN ({format_strings})
+        """, non_vegetarian_groups)
+    else:
+        cursor.execute("SELECT id FROM foods")
+
+    rows = cursor.fetchall()
+    conn.close()
+    return [row['id'] for row in rows]
+
+
 if __name__ == "__main__":
     food_data = get_food_data()
     nutrients_data = get_nutrients_data()
@@ -91,3 +112,4 @@ if __name__ == "__main__":
     print(f"Nutrients: {len(nutrients_data)}")
     print(f"DRI: {dri}")
     print(f"Preferences: {len(prefs)}")
+

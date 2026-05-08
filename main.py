@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 from pymoo.indicators.hv import HV
-from src.algorithms.nsga2 import run_nsga2, DietProblem
+from src.algorithms.nsga2 import run_nsga2
 from src.algorithms.spea2 import run_spea2
 
 
