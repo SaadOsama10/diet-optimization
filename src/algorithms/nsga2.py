@@ -26,12 +26,13 @@ class HVCallback(Callback):
 
 
 class DietProblem(Problem):
-    def __init__(self, user_id):
+    def __init__(self, user_id, alpha=1.0):
         self.food_data = get_food_data()
         self.nutrients_data = get_nutrients_data()
         self.dri = get_user_dri(user_id)
         self.user_preferences = get_user_preferences(user_id)
         self.food_ids = get_food_ids_for_user(user_id)
+        self.alpha = alpha
 
         super().__init__(
             n_var=len(self.food_ids),
@@ -54,7 +55,8 @@ class DietProblem(Problem):
 
             pref, cost, time = evaluate(
                 sel_b, sel_l, nutrients_total,
-                self.food_data, self.user_preferences, self.dri
+                self.food_data, self.user_preferences, self.dri,
+                alpha=self.alpha
             )
 
             F.append([-pref, cost, time])
@@ -62,8 +64,8 @@ class DietProblem(Problem):
         out["F"] = np.array(F)
 
 
-def run_nsga2(user_id, pop_size=100, n_gen=200, track_hv=False):
-    problem = DietProblem(user_id)
+def run_nsga2(user_id, pop_size=100, n_gen=200, track_hv=False, alpha=1.0):
+    problem = DietProblem(user_id, alpha=alpha)
     ref_point = np.array([0.0, 1000.0, 1000.0])
     callback = HVCallback(ref_point) if track_hv else None
 
