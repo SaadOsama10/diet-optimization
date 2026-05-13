@@ -4,6 +4,8 @@ import csv
 from pymoo.indicators.hv import HV
 from src.algorithms.nsga2 import run_nsga2
 from src.algorithms.spea2 import run_spea2
+from src.menu_table import get_sample_menus, print_menu_table
+from src.database import get_user_dri
 
 
 def calc_hypervolume(F, ref_point):
@@ -94,6 +96,10 @@ def run_experiment(user_id, pop_size=100, n_gen=50):
 
     print(f"NSGA-II Pareto solutions: {len(res_nsga2.F)}")
     print(f"SPEA2  Pareto solutions: {len(res_spea2.F)}")
+
+    print(f"\n=== Sample Menus - User {user_id} ===")
+    samples = get_sample_menus(res_nsga2, res_nsga2.problem, n_samples=3)
+    print_menu_table(samples, get_user_dri(user_id))
 
     return res_nsga2, res_spea2
 
