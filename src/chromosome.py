@@ -1,14 +1,16 @@
 import random
 
-def initialize(food_ids):
-    chromosome = food_ids.copy()
-    random.shuffle(chromosome)
-    breakfast = chromosome[:94]
-    lunch_dinner = chromosome[94:]
+HUGE_PENALTY = 1e6
+
+def initialize(breakfast_ids, lunch_dinner_ids):
+    breakfast = breakfast_ids.copy()
+    lunch_dinner = lunch_dinner_ids.copy()
+    random.shuffle(breakfast)
+    random.shuffle(lunch_dinner)
     return breakfast, lunch_dinner
 
 
-def decode(breakfast, lunch_dinner, nutrients_data, dri):
+def decode(breakfast, lunch_dinner, nutrients_data, dri, food_data=None):
     RLL = {n: dri[n]['RLL'] * 0.90 for n in dri}
     RUL = {n: dri[n]['RUL'] * 1.15 for n in dri}
     RLL_b = {n: dri[n]['RLL'] * 0.35 for n in dri}
@@ -18,6 +20,9 @@ def decode(breakfast, lunch_dinner, nutrients_data, dri):
     nutrients_total = {n: 0 for n in dri}
 
     for food_id in breakfast:
+        if food_data and food_data[food_id].get('preference', 0) == -1:
+            continue
+
         food_nutrients = nutrients_data.get(food_id, {})
         energy = food_nutrients.get('Energy', 0)
         protein = food_nutrients.get('Protein', 0)
@@ -38,6 +43,9 @@ def decode(breakfast, lunch_dinner, nutrients_data, dri):
     selected_lunch = []
 
     for food_id in lunch_dinner:
+        if food_data and food_data[food_id].get('preference', 0) == -1:
+            continue
+
         food_nutrients = nutrients_data.get(food_id, {})
         skip = False
         for n in dri:

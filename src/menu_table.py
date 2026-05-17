@@ -1,4 +1,4 @@
-from src.database import get_food_data, get_nutrients_data, get_user_dri, get_user_preferences, get_food_ids_for_user
+from src.database import get_user_dri
 from src.chromosome import decode
 
 
@@ -7,19 +7,20 @@ def get_sample_menus(res, problem, n_samples=3):
     nutrients_data = problem.nutrients_data
     dri = problem.dri
     user_preferences = problem.user_preferences
-    food_ids = problem.food_ids
+    breakfast_ids = problem.breakfast_ids
+    lunch_dinner_ids = problem.lunch_dinner_ids
 
     samples = []
     indices = range(min(n_samples, len(res.X)))
 
     for i in indices:
         x = res.X[i]
-        food_ids_permuted = [food_ids[int(j) % len(food_ids)] for j in x]
-        breakfast = food_ids_permuted[:94]
-        lunch_dinner = food_ids_permuted[94:]
+        n_b = len(breakfast_ids)
+        breakfast_perm = [breakfast_ids[int(j) % n_b] for j in x[:n_b]]
+        lunch_perm = [lunch_dinner_ids[int(j) % len(lunch_dinner_ids)] for j in x[n_b:]]
 
         sel_b, sel_l, nutrients_total = decode(
-            breakfast, lunch_dinner, nutrients_data, dri
+            breakfast_perm, lunch_perm, nutrients_data, dri, food_data
         )
 
         all_selected = sel_b + sel_l

@@ -5,7 +5,7 @@ from pymoo.core.callback import Callback
 from pymoo.indicators.hv import HV
 from pymoo.optimize import minimize
 
-from src.database import get_food_data, get_nutrients_data, get_user_dri, get_user_preferences, get_food_ids_for_user
+from src.database import get_food_data, get_nutrients_data, get_user_dri, get_user_preferences, get_breakfast_food_ids, get_lunch_dinner_food_ids
 from src.chromosome import decode
 from src.objectives import evaluate
 
@@ -31,26 +31,29 @@ class DietProblem(Problem):
         self.nutrients_data = get_nutrients_data()
         self.dri = get_user_dri(user_id)
         self.user_preferences = get_user_preferences(user_id)
-        self.food_ids = get_food_ids_for_user(user_id)
+        self.breakfast_ids = get_breakfast_food_ids(user_id)
+        self.lunch_dinner_ids = get_lunch_dinner_food_ids(user_id)
         self.alpha = alpha
 
+        n_var = len(self.breakfast_ids) + len(self.lunch_dinner_ids)
+
         super().__init__(
-            n_var=len(self.food_ids),
+            n_var=n_var,
             n_obj=3,
             xl=0,
-            xu=len(self.food_ids) - 1,
+            xu=n_var - 1,
             vtype=int
         )
 
     def _evaluate(self, X, out, *args, **kwargs):
         F = []
         for x in X:
-            food_ids_permuted = [self.food_ids[int(i) % len(self.food_ids)] for i in x]
-            breakfast = food_ids_permuted[:94]
-            lunch_dinner = food_ids_permuted[94:]
+            n_b = len(self.breakfast_ids)
+            breakfast_perm = [self.breakfast_ids[int(i) % n_b] for i in x[:n_b]]
+            lunch_perm = [self.lunch_dinner_ids[int(i) % len(self.lunch_dinner_ids)] for i in x[n_b:]]
 
             sel_b, sel_l, nutrients_total = decode(
-                breakfast, lunch_dinner, self.nutrients_data, self.dri
+                breakfast_perm, lunch_perm, self.nutrients_data, self.dri, self.food_data
             )
 
             pref, cost, time = evaluate(
