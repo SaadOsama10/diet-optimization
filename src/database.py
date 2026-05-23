@@ -12,6 +12,26 @@ def get_connection():
         database="diet"
     )
 
+def is_vegetarian(user_id):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT 
+            COUNT(*) as total,
+            SUM(CASE WHEN uf.preference = -1 THEN 1 ELSE 0 END) as negative
+        FROM user_foods uf
+        JOIN foods f ON uf.foodId = f.id
+        WHERE uf.userId = %s
+        AND f.foodGroupId IN (2, 3, 15, 23, 28)
+        AND uf.preference IS NOT NULL
+    """, (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if row['total'] == 0:
+        return False
+    ratio = row['negative'] / row['total']
+    return ratio > 0.5
+
 def get_food_data():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
@@ -88,8 +108,7 @@ def get_user_preferences(user_id):
 def get_breakfast_food_ids(user_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    format_strings = ','.join(['%s'] * len(BREAKFAST_GROUPS))
-    if user_id == 2:
+    if is_vegetarian(user_id):
         veg_breakfast = [g for g in BREAKFAST_GROUPS if g not in NON_VEGETARIAN_GROUPS]
         format_strings = ','.join(['%s'] * len(veg_breakfast))
         cursor.execute(f"""
@@ -97,6 +116,7 @@ def get_breakfast_food_ids(user_id):
             WHERE foodGroupId IN ({format_strings})
         """, veg_breakfast)
     else:
+        format_strings = ','.join(['%s'] * len(BREAKFAST_GROUPS))
         cursor.execute(f"""
             SELECT id FROM foods
             WHERE foodGroupId IN ({format_strings})
@@ -108,7 +128,7 @@ def get_breakfast_food_ids(user_id):
 def get_lunch_dinner_food_ids(user_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    if user_id == 2:
+    if is_vegetarian(user_id):
         veg_lunch = [g for g in LUNCH_DINNER_GROUPS if g not in NON_VEGETARIAN_GROUPS]
         format_strings = ','.join(['%s'] * len(veg_lunch))
         cursor.execute(f"""
@@ -128,7 +148,7 @@ def get_lunch_dinner_food_ids(user_id):
 def get_food_ids_for_user(user_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    if user_id == 2:
+    if is_vegetarian(user_id):
         format_strings = ','.join(['%s'] * len(NON_VEGETARIAN_GROUPS))
         cursor.execute(f"""
             SELECT id FROM foods
@@ -141,6 +161,8 @@ def get_food_ids_for_user(user_id):
     return [row['id'] for row in rows]
 
 if __name__ == "__main__":
+    print(f"User 1 vegetarian: {is_vegetarian(1)}")
+    print(f"User 2 vegetarian: {is_vegetarian(2)}")
     food_data = get_food_data()
     nutrients_data = get_nutrients_data()
     dri = get_user_dri(1)
