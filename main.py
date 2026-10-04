@@ -1,6 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import csv
+import os
+
+import matplotlib
+matplotlib.use('Agg')  # headless-safe: figures are saved to results/, not shown
+import matplotlib.pyplot as plt
+import numpy as np
 from pymoo.indicators.hv import HV
 from src.algorithms.nsga2 import run_nsga2
 from src.algorithms.spea2 import run_spea2
@@ -32,7 +36,7 @@ def plot_pareto(res_nsga2, res_spea2, user_id):
 
     plt.tight_layout()
     plt.savefig(f'results/pareto_user{user_id}.png')
-    plt.show()
+    plt.close()
 
 
 def plot_hypervolume(hv_nsga2, hv_spea2, user_id):
@@ -45,7 +49,7 @@ def plot_hypervolume(hv_nsga2, hv_spea2, user_id):
     plt.legend()
     plt.tight_layout()
     plt.savefig(f'results/hypervolume_user{user_id}.png')
-    plt.show()
+    plt.close()
 
 
 def plot_diversity_comparison(res_with, res_without, user_id):
@@ -67,7 +71,7 @@ def plot_diversity_comparison(res_with, res_without, user_id):
 
     plt.tight_layout()
     plt.savefig(f'results/diversity_user{user_id}.png')
-    plt.show()
+    plt.close()
 
 
 def save_results_csv(res, algorithm_name, user_id):
@@ -123,6 +127,7 @@ def run_diversity_experiment(user_id, pop_size=100, n_gen=50):
 
 
 if __name__ == "__main__":
+    os.makedirs('results', exist_ok=True)
     run_experiment(user_id=1, pop_size=100, n_gen=50)
     run_experiment(user_id=2, pop_size=100, n_gen=50)
     run_diversity_experiment(user_id=1, pop_size=100, n_gen=50)
