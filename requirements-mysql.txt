@@ -1,0 +1,3 @@
+# Only needed for DB_BACKEND=mysql and the MySQL export/import scripts
+-r requirements.txt
+mysql-connector-python>=9.0
