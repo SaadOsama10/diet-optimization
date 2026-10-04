@@ -62,7 +62,9 @@ class DietProblem(Problem):
                 alpha=self.alpha
             )
 
-            F.append([-pref, cost, time])
+            # pymoo minimizes. evaluate() returns every objective in maximize form
+            # (pref - R, -cost - R, -time - R), so all three are negated here.
+            F.append([-pref, -cost, -time])
 
         out["F"] = np.array(F)
 

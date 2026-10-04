@@ -1,5 +1,5 @@
 from src.database import get_user_dri
-from src.chromosome import decode
+from src.chromosome import decode, calculate_objectives
 
 
 def get_sample_menus(res, problem, n_samples=3):
@@ -26,11 +26,14 @@ def get_sample_menus(res, problem, n_samples=3):
         all_selected = sel_b + sel_l
         groups = set(food_data[fid]['foodGroupId'] for fid in all_selected)
 
+        # raw objective values of the decoded menu (res.F also contains the penalty term)
+        preference, cost, time = calculate_objectives(sel_b, sel_l, food_data, user_preferences)
+
         sample = {
             'solution_id': i + 1,
-            'preference': -res.F[i][0],
-            'cost': res.F[i][1],
-            'time': res.F[i][2],
+            'preference': preference,
+            'cost': cost,
+            'time': time,
             'nutrients': nutrients_total,
             'n_groups': len(groups),
             'breakfast': [food_data[fid]['name'] for fid in sel_b],
