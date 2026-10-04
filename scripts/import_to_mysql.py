@@ -19,10 +19,11 @@ def main():
     cur.execute(f"USE `{db}`")
     for table in reversed(list(TABLES)):
         cur.execute(f"DROP TABLE IF EXISTS `{table}`")
-    for stmt in SCHEMA_FILE.read_text(encoding="utf-8").split(";"):
-        lines = [l for l in stmt.splitlines() if not l.strip().startswith("--")]
-        if "".join(lines).strip():
-            cur.execute("\n".join(lines))
+    # drop comment lines first (they may contain ';'), then run each statement
+    schema = "\n".join(l for l in SCHEMA_FILE.read_text(encoding="utf-8").splitlines() if not l.strip().startswith("--"))
+    for stmt in schema.split(";"):
+        if stmt.strip():
+            cur.execute(stmt)
     for table, columns in TABLES.items():
         with open(DATA_DIR / f"{table}.csv", newline="", encoding="utf-8") as f:
             reader = csv.reader(f)
