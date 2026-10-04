@@ -1,0 +1,106 @@
+
+============================================================
+Solution 1
+============================================================
+Preference: 55.80 | Cost: 11.73 | Time: 5 min
+Food Groups: 6
+
+Breakfast:
+  - PERMESAN PEYNİRİ
+  - BAL
+  - ÜZÜM PEKMEZİ
+  - EKMEK
+  - LOR PEYNİRİ
+  - MEYVE SUYU LD
+  - EKMEK LD
+
+Lunch/Dinner:
+
+Nutrient Totals vs DRI:
+Nutrient                       Total        RLL        RUL     Status
+-----------------------------------------------------------------
+Fiber_total_dietary              4.1       20.0     9999.0          ❌
+Energy                         796.8     2000.0     2400.0          ❌
+Carbohydrate                   475.6      170.0      300.0          ❌
+Protein                         25.3       40.0      100.0          ❌
+Na                            1078.9     1500.0     2300.0          ❌
+
+============================================================
+Solution 2
+============================================================
+Preference: 161.70 | Cost: 42.48 | Time: 117 min
+Food Groups: 10
+
+Breakfast:
+  - ÇİLEK
+  - ARMUT REÇELİ
+  - BÖĞÜRTLEN REÇELİ
+  - SİYAH ZEYTIN
+  - ELMA
+  - MANDALİNA
+  - ŞEFTALİ SUYU LD
+  - ÇİLEK REÇELİ
+  - LOR PEYNİRİ
+  - GREYFURT SUYU LD
+  - LOR PEYNİRİ
+  - YEŞİL ZEYTIN
+  - BAL
+  - YEŞİL ZEYTIN
+  - LOR PEYNİRİ
+  - TAHİN PEKMEZ
+
+Lunch/Dinner:
+  - HAZIR PAKETLİ SÜTLÜ TATLI-PROFİTEROL
+  - HAVUÇ ÇORBASI
+  - AKDENİZ SALATASI
+  - BROKOLİ SALATASI
+  - CACIK LD
+
+Nutrient Totals vs DRI:
+Nutrient                       Total        RLL        RUL     Status
+-----------------------------------------------------------------
+Fiber_total_dietary             27.0       20.0     9999.0          ✅
+Energy                        2208.6     2000.0     2400.0          ✅
+Carbohydrate                   324.6      170.0      300.0          ❌
+Protein                         47.5       40.0      100.0          ✅
+Na                            1702.2     1500.0     2300.0          ✅
+
+============================================================
+Solution 3
+============================================================
+Preference: 173.10 | Cost: 26.91 | Time: 485 min
+Food Groups: 12
+
+Breakfast:
+  - LOR PEYNİRİ
+  - AYVA REÇELİ
+  - VİŞNE REÇELİ
+  - SİYAH ZEYTIN
+  - ÇİLEK
+  - MANDALİNA
+  - ŞEFTALİ SUYU LD
+  - YAZ HELVASI
+  - ÇİLEK REÇELİ
+  - LOR PEYNİRİ
+  - GREYFURT SUYU LD
+  - LOR PEYNİRİ
+
+Lunch/Dinner:
+  - HAVUÇ ÇORBASI
+  - FINDIKLI İRMİK HELVASI
+  - HAVUÇ ÇORBASI
+  - ELMA DİLİM PATATES KIZARTMASI B
+  - BROKOLİ SALATASI
+  - KÜP PATATES KIZARTMASI
+  - BAHARATLI ELMA DİLİM PATATES KIZARTMASI B
+  - YAYLA ÇORBASI
+  - ETSİZ PİRİNÇLİ ISPANAK
+
+Nutrient Totals vs DRI:
+Nutrient                       Total        RLL        RUL     Status
+-----------------------------------------------------------------
+Fiber_total_dietary             30.9       20.0     9999.0          ✅
+Energy                        2392.5     2000.0     2400.0          ✅
+Carbohydrate                   340.4      170.0      300.0          ❌
+Protein                         47.2       40.0      100.0          ✅
+Na                            1681.9     1500.0     2300.0          ✅

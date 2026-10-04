@@ -1,0 +1,12 @@
+[User 1] NSGA-II Pareto solutions: 100
+[User 1] SPEA2  Pareto solutions: 100
+[User 1] Final hypervolume (ref [0, 1000, 1000]): NSGA-II 127026595.9 | SPEA2 129883895.7
+[User 1] NSGA-II solutions inside all strict DRI bounds: 6/100
+[User 1] SPEA2 solutions inside all strict DRI bounds: 10/100
+[User 2] NSGA-II Pareto solutions: 100
+[User 2] SPEA2  Pareto solutions: 100
+[User 2] Final hypervolume (ref [0, 1000, 1000]): NSGA-II 183210194.6 | SPEA2 175587230.4
+[User 2] NSGA-II solutions inside all strict DRI bounds: 7/100
+[User 2] SPEA2 solutions inside all strict DRI bounds: 7/100
+[User 1] Diversity experiment, NSGA-II with diversity (alpha=1.0): 100 solutions
+[User 1] Diversity experiment, NSGA-II without diversity (alpha=0.0): 100 solutions

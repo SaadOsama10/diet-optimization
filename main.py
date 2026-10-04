@@ -91,10 +91,10 @@ def log(line):
         f.write(line + '\n')
 
 
-def dri_compliance(res, dri):
-    """Number of Pareto solutions whose decoded menu is inside every strict [RLL, RUL] bound."""
+def dri_compliant_menus(res, dri):
+    """Decoded Pareto menus that are inside every strict [RLL, RUL] bound, and the total menu count."""
     menus = get_sample_menus(res, res.problem, n_samples=len(res.X))
-    ok = sum(all(dri[n]['RLL'] <= m['nutrients'].get(n, 0) <= dri[n]['RUL'] for n in dri) for m in menus)
+    ok = [m for m in menus if all(dri[n]['RLL'] <= m['nutrients'].get(n, 0) <= dri[n]['RUL'] for n in dri)]
     return ok, len(menus)
 
 
@@ -118,8 +118,12 @@ def run_experiment(user_id, pop_size=100, n_gen=50):
     log(f"[User {user_id}] SPEA2  Pareto solutions: {len(res_spea2.F)}")
     log(f"[User {user_id}] Final hypervolume (ref [0, 1000, 1000]): NSGA-II {hv_nsga2[-1]:.1f} | SPEA2 {hv_spea2[-1]:.1f}")
     for name, res in (('NSGA-II', res_nsga2), ('SPEA2', res_spea2)):
-        ok, total = dri_compliance(res, dri)
-        log(f"[User {user_id}] {name} solutions inside all strict DRI bounds: {ok}/{total}")
+        ok, total = dri_compliant_menus(res, dri)
+        log(f"[User {user_id}] {name} solutions inside all strict DRI bounds: {len(ok)}/{total}")
+        if name == 'NSGA-II' and ok:
+            best = max(ok, key=lambda m: m['preference'])
+            with open(f'results/example_menu_user{user_id}.txt', 'w', encoding='utf-8') as f, contextlib.redirect_stdout(f):
+                print_menu_table([best], dri)
 
     print(f"\n=== Sample Menus - User {user_id} ===")
     samples = get_sample_menus(res_nsga2, res_nsga2.problem, n_samples=3)

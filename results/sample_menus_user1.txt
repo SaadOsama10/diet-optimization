@@ -1,0 +1,73 @@
+
+============================================================
+Solution 1
+============================================================
+Preference: 17.00 | Cost: 8.70 | Time: 5 min
+Food Groups: 5
+
+Breakfast:
+  - YEŞİL ZEYTIN
+  - ÖRGÜ PEYNİRİ
+  - EKMEK
+  - DİL PEYNİRİ
+  - MEYVE SUYU
+  - ERİK
+
+Lunch/Dinner:
+
+Nutrient Totals vs DRI:
+Nutrient                       Total        RLL        RUL     Status
+-----------------------------------------------------------------
+Fiber_total_dietary              5.7       20.0     9999.0          ❌
+Energy                         753.2     2000.0     2400.0          ❌
+Carbohydrate                   439.0      170.0      300.0          ❌
+Protein                         24.8       40.0      100.0          ❌
+Na                            1057.8     1500.0     2300.0          ❌
+
+============================================================
+Solution 2
+============================================================
+Preference: 6.30 | Cost: 4.61 | Time: 5 min
+Food Groups: 4
+
+Breakfast:
+  - YEŞİL ZEYTIN
+  - ÖRGÜ PEYNİRİ
+  - EKMEK
+  - EKMEK
+  - MEYVE SUYU
+
+Lunch/Dinner:
+
+Nutrient Totals vs DRI:
+Nutrient                       Total        RLL        RUL     Status
+-----------------------------------------------------------------
+Fiber_total_dietary              4.4       20.0     9999.0          ❌
+Energy                         741.7     2000.0     2400.0          ❌
+Carbohydrate                   455.5      170.0      300.0          ❌
+Protein                         22.5       40.0      100.0          ❌
+Na                            1026.3     1500.0     2300.0          ❌
+
+============================================================
+Solution 3
+============================================================
+Preference: 8.80 | Cost: 4.42 | Time: 215 min
+Food Groups: 3
+
+Breakfast:
+  - PEYNİRLİ YUFKA BÖREĞİ
+
+Lunch/Dinner:
+  - HAVUÇ-TURP SALATASI
+  - ARPA ŞEHRİYELİ AYRAN ÇORBASI
+  - TOYGA ÇORBASI
+  - ARPA ŞEHRİYELİ AYRAN ÇORBASI
+
+Nutrient Totals vs DRI:
+Nutrient                       Total        RLL        RUL     Status
+-----------------------------------------------------------------
+Fiber_total_dietary             22.5       20.0     9999.0          ✅
+Energy                        1883.9     2000.0     2400.0          ❌
+Carbohydrate                   220.1      170.0      300.0          ✅
+Protein                         71.7       40.0      100.0          ✅
+Na                            1831.5     1500.0     2300.0          ✅
