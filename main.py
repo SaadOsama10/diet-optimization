@@ -1,3 +1,4 @@
+import contextlib
 import csv
 import os
 
@@ -83,6 +84,20 @@ def save_results_csv(res, algorithm_name, user_id):
             writer.writerow([-row[0], row[1], row[2]])
 
 
+def log(line):
+    """Print a summary line and append it to results/summary.txt."""
+    print(line)
+    with open('results/summary.txt', 'a', encoding='utf-8') as f:
+        f.write(line + '\n')
+
+
+def dri_compliance(res, dri):
+    """Number of Pareto solutions whose decoded menu is inside every strict [RLL, RUL] bound."""
+    menus = get_sample_menus(res, res.problem, n_samples=len(res.X))
+    ok = sum(all(dri[n]['RLL'] <= m['nutrients'].get(n, 0) <= dri[n]['RUL'] for n in dri) for m in menus)
+    return ok, len(menus)
+
+
 def run_experiment(user_id, pop_size=100, n_gen=50):
     print(f"\n=== Experiment 1 & 2 - User {user_id} ===")
 
@@ -98,12 +113,19 @@ def run_experiment(user_id, pop_size=100, n_gen=50):
     save_results_csv(res_nsga2, 'nsga2', user_id)
     save_results_csv(res_spea2, 'spea2', user_id)
 
-    print(f"NSGA-II Pareto solutions: {len(res_nsga2.F)}")
-    print(f"SPEA2  Pareto solutions: {len(res_spea2.F)}")
+    dri = get_user_dri(user_id)
+    log(f"[User {user_id}] NSGA-II Pareto solutions: {len(res_nsga2.F)}")
+    log(f"[User {user_id}] SPEA2  Pareto solutions: {len(res_spea2.F)}")
+    log(f"[User {user_id}] Final hypervolume (ref [0, 1000, 1000]): NSGA-II {hv_nsga2[-1]:.1f} | SPEA2 {hv_spea2[-1]:.1f}")
+    for name, res in (('NSGA-II', res_nsga2), ('SPEA2', res_spea2)):
+        ok, total = dri_compliance(res, dri)
+        log(f"[User {user_id}] {name} solutions inside all strict DRI bounds: {ok}/{total}")
 
     print(f"\n=== Sample Menus - User {user_id} ===")
     samples = get_sample_menus(res_nsga2, res_nsga2.problem, n_samples=3)
-    print_menu_table(samples, get_user_dri(user_id))
+    print_menu_table(samples, dri)
+    with open(f'results/sample_menus_user{user_id}.txt', 'w', encoding='utf-8') as f, contextlib.redirect_stdout(f):
+        print_menu_table(samples, dri)
 
     return res_nsga2, res_spea2
 
@@ -122,12 +144,13 @@ def run_diversity_experiment(user_id, pop_size=100, n_gen=50):
     save_results_csv(res_with, 'nsga2_with_diversity', user_id)
     save_results_csv(res_without, 'nsga2_without_diversity', user_id)
 
-    print(f"With diversity:    {len(res_with.F)} solutions")
-    print(f"Without diversity: {len(res_without.F)} solutions")
+    log(f"[User {user_id}] Diversity experiment, NSGA-II with diversity (alpha=1.0): {len(res_with.F)} solutions")
+    log(f"[User {user_id}] Diversity experiment, NSGA-II without diversity (alpha=0.0): {len(res_without.F)} solutions")
 
 
 if __name__ == "__main__":
     os.makedirs('results', exist_ok=True)
+    open('results/summary.txt', 'w').close()
     run_experiment(user_id=1, pop_size=100, n_gen=50)
     run_experiment(user_id=2, pop_size=100, n_gen=50)
     run_diversity_experiment(user_id=1, pop_size=100, n_gen=50)
