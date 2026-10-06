@@ -2,105 +2,86 @@
 ============================================================
 Solution 1
 ============================================================
-Preference: 55.80 | Cost: 11.73 | Time: 5 min
-Food Groups: 6
+Preference: 49.80 | Cost: 7.44 | Time: 5 min
+Food Groups: 5
 
 Breakfast:
-  - PERMESAN PEYNİRİ
-  - BAL
-  - ÜZÜM PEKMEZİ
   - EKMEK
-  - LOR PEYNİRİ
-  - MEYVE SUYU LD
-  - EKMEK LD
+  - ŞEFTALİ REÇELİ
+  - MEYVE SUYU
+  - EKMEK
+  - YEŞİL ZEYTIN
+  - SİYAH ZEYTIN
+  - SİYAH ZEYTIN
+  - YER FISTIĞI EZMESİ
 
 Lunch/Dinner:
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary              4.1       20.0     9999.0          ❌
-Energy                         796.8     2000.0     2400.0          ❌
-Carbohydrate                   475.6      170.0      300.0          ❌
-Protein                         25.3       40.0      100.0          ❌
-Na                            1078.9     1500.0     2300.0          ❌
+Fiber_total_dietary              6.4       20.0     9999.0          ❌
+Energy                         819.2     2000.0     2400.0          ❌
+Carbohydrate                   493.6      170.0      300.0          ❌
+Protein                         19.0       40.0      100.0          ❌
+Na                             965.5     1500.0     2300.0          ❌
 
 ============================================================
 Solution 2
 ============================================================
-Preference: 161.70 | Cost: 42.48 | Time: 117 min
+Preference: 135.60 | Cost: 36.14 | Time: 80 min
 Food Groups: 10
 
 Breakfast:
-  - ÇİLEK
-  - ARMUT REÇELİ
+  - KİVİ
+  - ÜZÜM
+  - AYVA
   - BÖĞÜRTLEN REÇELİ
-  - SİYAH ZEYTIN
-  - ELMA
-  - MANDALİNA
-  - ŞEFTALİ SUYU LD
-  - ÇİLEK REÇELİ
-  - LOR PEYNİRİ
-  - GREYFURT SUYU LD
-  - LOR PEYNİRİ
-  - YEŞİL ZEYTIN
+  - GREYFURT SUYU
+  - KAYMAK
+  - BÖĞÜRTLEN REÇELİ
+  - BAL
+  - FINDIK EZMESİ
   - BAL
   - YEŞİL ZEYTIN
-  - LOR PEYNİRİ
-  - TAHİN PEKMEZ
 
 Lunch/Dinner:
-  - HAZIR PAKETLİ SÜTLÜ TATLI-PROFİTEROL
-  - HAVUÇ ÇORBASI
-  - AKDENİZ SALATASI
-  - BROKOLİ SALATASI
-  - CACIK LD
+  - MEVSİM SALATASI
+  - AYVA TATLISI
+  - ROKA SALATASI
+  - SALATALIK TURSUSU
+  - ROKA SALATASI LD
+  - ROKA SALATASI LD
+  - ROKA SALATASI LD
+  - KORNİŞON TURŞU
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary             27.0       20.0     9999.0          ✅
-Energy                        2208.6     2000.0     2400.0          ✅
-Carbohydrate                   324.6      170.0      300.0          ❌
-Protein                         47.5       40.0      100.0          ✅
-Na                            1702.2     1500.0     2300.0          ✅
+Fiber_total_dietary             43.2       20.0     9999.0          ✅
+Energy                        1795.6     2000.0     2400.0          ❌
+Carbohydrate                   344.1      170.0      300.0          ❌
+Protein                         18.1       40.0      100.0          ❌
+Na                             726.2     1500.0     2300.0          ❌
 
 ============================================================
 Solution 3
 ============================================================
-Preference: 173.10 | Cost: 26.91 | Time: 485 min
-Food Groups: 12
+Preference: 14.80 | Cost: 3.38 | Time: 5 min
+Food Groups: 3
 
 Breakfast:
-  - LOR PEYNİRİ
-  - AYVA REÇELİ
-  - VİŞNE REÇELİ
-  - SİYAH ZEYTIN
-  - ÇİLEK
-  - MANDALİNA
-  - ŞEFTALİ SUYU LD
-  - YAZ HELVASI
-  - ÇİLEK REÇELİ
-  - LOR PEYNİRİ
-  - GREYFURT SUYU LD
-  - LOR PEYNİRİ
+  - EKMEK
+  - SÜT
+  - MEYVE SUYU
 
 Lunch/Dinner:
-  - HAVUÇ ÇORBASI
-  - FINDIKLI İRMİK HELVASI
-  - HAVUÇ ÇORBASI
-  - ELMA DİLİM PATATES KIZARTMASI B
-  - BROKOLİ SALATASI
-  - KÜP PATATES KIZARTMASI
-  - BAHARATLI ELMA DİLİM PATATES KIZARTMASI B
-  - YAYLA ÇORBASI
-  - ETSİZ PİRİNÇLİ ISPANAK
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary             30.9       20.0     9999.0          ✅
-Energy                        2392.5     2000.0     2400.0          ✅
-Carbohydrate                   340.4      170.0      300.0          ❌
-Protein                         47.2       40.0      100.0          ✅
-Na                            1681.9     1500.0     2300.0          ✅
+Fiber_total_dietary              2.2       20.0     9999.0          ❌
+Energy                         752.0     2000.0     2400.0          ❌
+Carbohydrate                   432.6      170.0      300.0          ❌
+Protein                         15.5       40.0      100.0          ❌
+Na                             368.0     1500.0     2300.0          ❌

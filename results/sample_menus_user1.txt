@@ -2,72 +2,113 @@
 ============================================================
 Solution 1
 ============================================================
-Preference: 17.00 | Cost: 8.70 | Time: 5 min
-Food Groups: 5
+Preference: 94.60 | Cost: 15.36 | Time: 630 min
+Food Groups: 11
 
 Breakfast:
-  - YEŞİL ZEYTIN
-  - ÖRGÜ PEYNİRİ
-  - EKMEK
-  - DİL PEYNİRİ
-  - MEYVE SUYU
-  - ERİK
+  - LOR PEYNİRİ
+  - SOSİSLİ MİLFÖY BÖREĞİ
+  - LOR PEYNİRİ
+  - EKMEK LD
+  - INCİR REÇELİ
+  - KARPUZ
+  - SOSİSLİ MİLFÖY BÖREĞİ
+  - LOR PEYNİRİ
 
 Lunch/Dinner:
+  - YOĞURTLU BUĞDAY ÇORBASI
+  - BAHARATLI ELMA DİLİM PATATES KIZARTMASI
+  - SARAY ÇORBASI
+  - KREMALI SÜTLÜ PATATES
+  - ARPA ŞEHRİYE PİLAVI
+  - HAVUÇ-TURP SALATASI LD
+  - ANDALOZ ÇORBASI
+  - BOLONEZ SOSLU MAKARNA
+  - ÇOBAN SALATASI LD
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary              5.7       20.0     9999.0          ❌
-Energy                         753.2     2000.0     2400.0          ❌
-Carbohydrate                   439.0      170.0      300.0          ❌
-Protein                         24.8       40.0      100.0          ❌
-Na                            1057.8     1500.0     2300.0          ❌
+Fiber_total_dietary             22.4       20.0     9999.0          ✅
+Energy                        2084.5     2000.0     2400.0          ✅
+Carbohydrate                   239.9      170.0      300.0          ✅
+Protein                         55.9       40.0      100.0          ✅
+Na                            2524.5     1500.0     2300.0          ❌
 
 ============================================================
 Solution 2
 ============================================================
-Preference: 6.30 | Cost: 4.61 | Time: 5 min
-Food Groups: 4
+Preference: 119.70 | Cost: 52.27 | Time: 277 min
+Food Groups: 12
 
 Breakfast:
-  - YEŞİL ZEYTIN
-  - ÖRGÜ PEYNİRİ
-  - EKMEK
-  - EKMEK
-  - MEYVE SUYU
+  - INCİR REÇELİ
+  - PORTAKAL
+  - KİRAZ
+  - INCİR REÇELİ
+  - AYVA
+  - INCİR REÇELİ
+  - KİRAZ
+  - ELMA SUYU
+  - ERİK
+  - BÖĞÜRTLEN REÇELİ
+  - TAHİN PEKMEZ
 
 Lunch/Dinner:
+  - POŞE YUMURTA
+  - CACIK
+  - ELMA DİLİM PATATES KIZARTMASI B
+  - KURU KÖFTE
+  - ANTEP FISTIKLI TEL KADAYIF
+  - SOSİS
+  - MEVSİM SALATASI
+  - ÇOBAN SALATASI LD
+  - ANDALOZ ÇORBASI
+  - SALATALIK TURSUSU
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary              4.4       20.0     9999.0          ❌
-Energy                         741.7     2000.0     2400.0          ❌
-Carbohydrate                   455.5      170.0      300.0          ❌
-Protein                         22.5       40.0      100.0          ❌
-Na                            1026.3     1500.0     2300.0          ❌
+Fiber_total_dietary             49.0       20.0     9999.0          ✅
+Energy                        2531.8     2000.0     2400.0          ❌
+Carbohydrate                   344.9      170.0      300.0          ❌
+Protein                         72.6       40.0      100.0          ✅
+Na                            1485.0     1500.0     2300.0          ❌
 
 ============================================================
 Solution 3
 ============================================================
-Preference: 8.80 | Cost: 4.42 | Time: 215 min
-Food Groups: 3
+Preference: 138.40 | Cost: 40.93 | Time: 445 min
+Food Groups: 11
 
 Breakfast:
-  - PEYNİRLİ YUFKA BÖREĞİ
+  - INCİR REÇELİ
+  - KİRAZ
+  - BEYAZ PEYNIR
+  - INCİR REÇELİ
+  - AYVA
+  - INCİR REÇELİ
+  - INCİR REÇELİ
+  - ÜZÜM PEKMEZİ
+  - LOR PEYNİRİ
+  - FINDIK EZMESİ
+  - HAVUÇ SUYU LD
+  - PORTAKAL SUYU
 
 Lunch/Dinner:
-  - HAVUÇ-TURP SALATASI
-  - ARPA ŞEHRİYELİ AYRAN ÇORBASI
-  - TOYGA ÇORBASI
-  - ARPA ŞEHRİYELİ AYRAN ÇORBASI
+  - ALİ PAŞA PİLAVI
+  - CACIK
+  - KREMALI DOMATES  ÇORBASI
+  - ZEYTİNYAĞLI SEMİZOTU
+  - KREMALI MANTAR ÇORBASI
+  - ANDALOZ ÇORBASI
+  - SALÇALI HİNDİ BİFTEK
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary             22.5       20.0     9999.0          ✅
-Energy                        1883.9     2000.0     2400.0          ❌
-Carbohydrate                   220.1      170.0      300.0          ✅
-Protein                         71.7       40.0      100.0          ✅
-Na                            1831.5     1500.0     2300.0          ✅
+Fiber_total_dietary             26.8       20.0     9999.0          ✅
+Energy                        2199.1     2000.0     2400.0          ✅
+Carbohydrate                   250.1      170.0      300.0          ✅
+Protein                         93.8       40.0      100.0          ✅
+Na                            2191.8     1500.0     2300.0          ✅

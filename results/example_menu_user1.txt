@@ -1,33 +1,38 @@
 
 ============================================================
-Solution 96
+Solution 3
 ============================================================
-Preference: 93.30 | Cost: 26.45 | Time: 170 min
-Food Groups: 8
+Preference: 138.40 | Cost: 40.93 | Time: 445 min
+Food Groups: 11
 
 Breakfast:
-  - FINDIK EZMESİ
-  - ERİK
-  - KURU KAYISI
-  - PORTAKAL SUYU
-  - KARPUZ
-  - KARPUZ
+  - INCİR REÇELİ
+  - KİRAZ
+  - BEYAZ PEYNIR
+  - INCİR REÇELİ
+  - AYVA
+  - INCİR REÇELİ
   - INCİR REÇELİ
   - ÜZÜM PEKMEZİ
-  - GREYFURT SUYU
+  - LOR PEYNİRİ
+  - FINDIK EZMESİ
+  - HAVUÇ SUYU LD
+  - PORTAKAL SUYU
 
 Lunch/Dinner:
-  - HAVUÇ-TURP SALATASI LD
-  - HAYDARİ
-  - TEL ŞEHRİYE ÇORBASI
-  - SEMİZOTU SALATASI LD
-  - HASANPAŞA KÖFTE
+  - ALİ PAŞA PİLAVI
+  - CACIK
+  - KREMALI DOMATES  ÇORBASI
+  - ZEYTİNYAĞLI SEMİZOTU
+  - KREMALI MANTAR ÇORBASI
+  - ANDALOZ ÇORBASI
+  - SALÇALI HİNDİ BİFTEK
 
 Nutrient Totals vs DRI:
 Nutrient                       Total        RLL        RUL     Status
 -----------------------------------------------------------------
-Fiber_total_dietary             22.8       20.0     9999.0          ✅
-Energy                        2293.7     2000.0     2400.0          ✅
-Carbohydrate                   276.0      170.0      300.0          ✅
-Protein                         78.1       40.0      100.0          ✅
-Na                            1642.4     1500.0     2300.0          ✅
+Fiber_total_dietary             26.8       20.0     9999.0          ✅
+Energy                        2199.1     2000.0     2400.0          ✅
+Carbohydrate                   250.1      170.0      300.0          ✅
+Protein                         93.8       40.0      100.0          ✅
+Na                            2191.8     1500.0     2300.0          ✅
