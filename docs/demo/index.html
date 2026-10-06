@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diet Optimization Live Demo</title>
+<meta name="description" content="Run NSGA-II or SPEA2 in your browser to find daily menus that trade off preference, cost and preparation time.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A5%97%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f6f7fb; --card: #ffffff; --ink: #1a1b27; --muted: #5b6078; --line: #e2e5ef;
+  --accent: #3b5bdb; --accent-ink: #ffffff; --ok: #12805c; --bad: #c2410c; --track: #e8ebf5;
+  --pt-ok: #3b5bdb; --pt-other: #9aa1b8; --pt-best: #e8a400; --shadow: 0 1px 2px rgba(20,24,40,.06), 0 8px 24px rgba(20,24,40,.06);
+}
+:root[data-theme="dark"] {
+  --bg: #12131b; --card: #1a1b27; --ink: #e6e8f2; --muted: #9ba1bd; --line: #2b2d3f;
+  --accent: #7aa2f7; --accent-ink: #0f1220; --ok: #5fd3a0; --bad: #ff9a6c; --track: #2a2c3f;
+  --pt-ok: #7aa2f7; --pt-other: #6a7090; --pt-best: #ffc83d; --shadow: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12131b; --card: #1a1b27; --ink: #e6e8f2; --muted: #9ba1bd; --line: #2b2d3f;
+    --accent: #7aa2f7; --accent-ink: #0f1220; --ok: #5fd3a0; --bad: #ff9a6c; --track: #2a2c3f;
+    --pt-ok: #7aa2f7; --pt-other: #6a7090; --pt-best: #ffc83d; --shadow: none;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px 48px; }
+header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 28px 0 8px; }
+h1 { font-size: clamp(1.5rem, 4.5vw, 2.1rem); line-height: 1.15; margin: 0 0 6px; }
+.sub { color: var(--muted); margin: 0; max-width: 62ch; }
+.iconbtn { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 10px; width: 40px; height: 40px; font-size: 18px; cursor: pointer; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); margin-top: 16px; }
+.card h2 { font-size: 1.05rem; margin: 0 0 12px; }
+.controls { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .controls { grid-template-columns: 1.3fr 1fr 1fr auto; align-items: end; } }
+label, .lbl { display: block; font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; letter-spacing: .02em; }
+select, input[type=number] { width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 0 12px; font: inherit; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg); }
+.seg button { flex: 1; height: 42px; border: 0; background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.seedrow { display: flex; gap: 8px; }
+.seedrow button { flex: none; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; font-size: 18px; }
+.run { height: 44px; padding: 0 26px; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 700; cursor: pointer; }
+.run:disabled { opacity: .5; cursor: progress; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.status { margin-top: 14px; display: none; }
+.status.on { display: block; }
+.status p { margin: 0 0 6px; font-size: .9rem; color: var(--muted); }
+.bar { height: 8px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.bar > div { height: 100%; width: 0; background: var(--accent); transition: width .15s linear; }
+.bar.indeterminate > div { width: 35%; animation: slide 1.2s ease-in-out infinite; }
+@keyframes slide { 0% { margin-left: -35%; } 100% { margin-left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .bar.indeterminate > div { animation: none; width: 100%; opacity: .5; } }
+.err { color: var(--bad); font-weight: 600; }
+.tiles { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: var(--shadow); min-width: 0; }
+.tile .k { font-size: .75rem; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+.tile .v { font-size: 1.45rem; font-weight: 750; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tile .n { font-size: .75rem; color: var(--muted); }
+#results[hidden] { display: none; }
+.charthead { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.charthead .seg { max-width: 100%; }
+.charthead .seg button { padding: 0 12px; height: 38px; font-size: .88rem; white-space: nowrap; }
+#chart { width: 100%; height: 440px; }
+@media (max-width: 600px) { #chart { height: 360px; } }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .82rem; color: var(--muted); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; vertical-align: baseline; }
+.menu h3 { margin: 0; font-size: 1.15rem; }
+.menuhead { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; justify-content: space-between; }
+.badge { display: inline-block; font-size: .75rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--line); }
+.badge.ok { color: var(--ok); border-color: var(--ok); }
+.badge.bad { color: var(--bad); border-color: var(--bad); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 0 4px; }
+.facts div { min-width: 0; } .facts b { display: block; font-size: 1.2rem; font-variant-numeric: tabular-nums; } .facts span { font-size: .75rem; color: var(--muted); font-weight: 600; }
+.cols { display: grid; gap: 4px 28px; grid-template-columns: 1fr; margin-top: 10px; }
+@media (min-width: 720px) { .cols { grid-template-columns: 1fr 1fr; } }
+.cols h4 { margin: 12px 0 6px; font-size: .8rem; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.cols ul { margin: 0; padding-left: 18px; }
+.cols li { margin: 2px 0; overflow-wrap: anywhere; }
+.nut { margin-top: 14px; display: grid; gap: 10px; }
+.nrow { display: grid; grid-template-columns: 110px 1fr; gap: 4px 12px; align-items: center; font-size: .9rem; }
+.nrow .t { font-variant-numeric: tabular-nums; }
+.nrow .t small { color: var(--muted); }
+.gauge { position: relative; height: 8px; background: var(--track); border-radius: 99px; grid-column: 2; }
+.gauge .rng { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--ok) 35%, transparent); border-radius: 99px; }
+.gauge .dot { position: absolute; top: -3px; width: 14px; height: 14px; border-radius: 50%; background: var(--ok); border: 2px solid var(--card); transform: translateX(-50%); }
+.gauge.out .dot { background: var(--bad); }
+.nrow .name { grid-row: span 1; font-weight: 600; }
+@media (max-width: 480px) { .nrow { grid-template-columns: 1fr; } .gauge { grid-column: 1; } }
+.hint { color: var(--muted); font-size: .85rem; margin: 8px 0 0; }
+.how ol { padding-left: 20px; margin: 0; } .how li { margin: 6px 0; }
+.how code { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; font-size: .85em; }
+.credits { color: var(--muted); font-size: .92rem; }
+.credits p { margin: 6px 0; }
+footer { margin-top: 24px; color: var(--muted); font-size: .85rem; text-align: center; }
+.btnlink { display: inline-block; margin-top: 8px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; text-decoration: none; font-weight: 600; font-size: .9rem; background: var(--bg); }
+button.linklike { background: none; border: 0; color: var(--accent); padding: 0; font: inherit; cursor: pointer; text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>🥗 Diet Optimization, live</h1>
+      <p class="sub">Multi-objective menu search over 405 foods. Pick a user and an algorithm; the real Python code (pymoo) runs entirely in your browser, with no server involved.</p>
+    </div>
+    <button class="iconbtn" id="theme" aria-label="Toggle light or dark theme" title="Toggle theme">◐</button>
+  </header>
+
+  <section class="card" aria-labelledby="ctl">
+    <h2 id="ctl" class="sr" style="position:absolute;left:-9999px">Run settings</h2>
+    <div class="controls">
+      <div>
+        <label for="user">User profile</label>
+        <select id="user">
+          <option value="1">User 1: 25-year-old woman, omnivore</option>
+          <option value="2">User 2: 25-year-old woman, vegetarian</option>
+        </select>
+      </div>
+      <div>
+        <span class="lbl" id="algolbl">Algorithm</span>
+        <div class="seg" role="group" aria-labelledby="algolbl">
+          <button type="button" data-algo="nsga2" aria-pressed="true">NSGA-II</button>
+          <button type="button" data-algo="spea2" aria-pressed="false">SPEA2</button>
+        </div>
+      </div>
+      <div>
+        <label for="seed">Random seed</label>
+        <div class="seedrow">
+          <input id="seed" type="number" min="0" max="999999" step="1" value="42" inputmode="numeric">
+          <button type="button" id="dice" aria-label="Random seed" title="Random seed">🎲</button>
+        </div>
+      </div>
+      <button class="run" id="run" disabled>Run</button>
+    </div>
+    <div class="status on" id="status" role="status" aria-live="polite">
+      <p id="statusText">Starting…</p>
+      <div class="bar indeterminate" id="bar"><div></div></div>
+    </div>
+    <p class="hint">Population 100, 50 generations: the same settings as the project's <code>main.py</code>. The same seed always gives the same result.</p>
+  </section>
+
+  <div id="results" hidden>
+    <div class="tiles" style="margin-top:16px">
+      <div class="tile"><div class="k">HYPERVOLUME</div><div class="v" id="tHv">–</div><div class="n">ref point [0, 1000, 1000]</div></div>
+      <div class="tile"><div class="k">PARETO SOLUTIONS</div><div class="v" id="tN">–</div><div class="n">non-dominated menus</div></div>
+      <div class="tile"><div class="k">FULLY DRI-COMPLIANT</div><div class="v" id="tOk">–</div><div class="n">inside every nutrient bound</div></div>
+      <div class="tile"><div class="k">RUN TIME</div><div class="v" id="tT">–</div><div class="n" id="tTn">in your browser</div></div>
+    </div>
+
+    <section class="card" aria-labelledby="chh">
+      <div class="charthead">
+        <h2 id="chh" style="margin:0">Pareto front</h2>
+        <div class="seg" role="group" aria-label="Chart view">
+          <button type="button" data-view="3d" aria-pressed="true">3D</button>
+          <button type="button" data-view="cost" aria-pressed="false">Preference vs cost</button>
+          <button type="button" data-view="time" aria-pressed="false">Preference vs time</button>
+        </div>
+      </div>
+      <div id="chart" role="img" aria-label="Interactive Pareto front scatter plot"></div>
+      <div class="legend">
+        <span><i style="background:var(--pt-ok)"></i>Inside all DRI bounds</span>
+        <span><i style="background:var(--pt-other)"></i>Violates a bound</span>
+        <span><i style="background:var(--pt-best)"></i>Best compliant menu</span>
+      </div>
+      <p class="hint">Click or tap a point to see that menu. Axis values are the optimiser's objectives, including the penalty for violated nutrient bounds, as in the project's plots.</p>
+    </section>
+
+    <section class="card menu" aria-live="polite" id="menuCard"></section>
+  </div>
+
+  <section class="card how" aria-labelledby="how">
+    <h2 id="how">How it works</h2>
+    <ol>
+      <li><b>Problem.</b> Build one day of meals (breakfast plus lunch/dinner) from 405 foods, balancing three conflicting goals: maximise the user's food preference, minimise cost, minimise preparation + cooking time.</li>
+      <li><b>Constraints.</b> Energy, protein, carbohydrate, fibre and sodium should sit inside the user's age and gender Dietary Reference Intake range. They are soft: violations are penalised in all three objectives. A vegetarian user has meat, fish and poultry groups removed.</li>
+      <li><b>Search.</b> Each candidate is a priority ordering of foods, turned into a menu by a greedy decoder. <b>NSGA-II</b> (non-dominated sorting + crowding distance) or <b>SPEA2</b> (strength Pareto + density estimation) evolves 100 candidates for 50 generations.</li>
+      <li><b>Result.</b> The final non-dominated set is the Pareto front: no menu is better on all three goals than another. <b>Hypervolume</b> measures how much objective space the front covers (larger is better), and the card shows the highest-preference menu that satisfies every nutrient bound.</li>
+      <li><b>In your browser.</b> The project's own <code>src/</code> code and its SQLite database run in <a href="https://pyodide.org">Pyodide</a> (Python compiled to WebAssembly) inside a Web Worker, so this page stays responsive. pymoo 0.6.1.6 runs unmodified apart from two stand-ins: a pure-Python exact hypervolume replacing the compiled <code>moocore</code>, and a stub for a terminal progress bar. Results match the desktop Python run for the same seed (see the parity check in the repository).</li>
+      <li><b>Seed.</b> The original scripts do not seed the random generator, so every desktop run differs. The demo adds a seed (passed to pymoo's <code>minimize</code>) purely so a run can be repeated.</li>
+    </ol>
+  </section>
+
+  <section class="card credits" aria-labelledby="cr">
+    <h2 id="cr" style="color:var(--ink)">Credits</h2>
+    <p><b>Team:</b> Saed O S Radi, Kenan Alemam, Ahmed Alsaleh, Abdulrahman Aljabahji, Mamdouh Al Masri. Heuristic Optimization course project, FSMVU.</p>
+    <p><b>Dataset:</b> the Turkish food database provided for the Heuristic Optimization course (FSMVU): 405 foods, nutrients, DRI bounds and user ratings; food data from diyetasistan.com. Food names are shown in the original Turkish. Users are anonymous numeric ids.</p>
+    <p><b>Built with:</b> <a href="https://pymoo.org">pymoo</a>, <a href="https://pyodide.org">Pyodide</a>, <a href="https://plotly.com/javascript/">Plotly.js</a>.</p>
+    <a class="btnlink" href="https://github.com/SaadOsama10/diet-optimization">View the source on GitHub →</a>
+  </section>
+  <footer>All rights reserved. Runs locally in your browser; nothing is uploaded.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-gl3d-dist-min@2.35.2/plotly-gl3d.min.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const state = { algo: 'nsga2', view: '3d', result: null, selected: null, ready: false, running: false, tStart: 0 };
+  const NUTRIENT_LABELS = { Energy: ['Energy', 'kcal'], Protein: ['Protein', 'g'], Carbohydrate: ['Carbohydrate', 'g'], Fiber_total_dietary: ['Fibre', 'g'], Na: ['Sodium', 'mg'] };
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // ---- theme ----
+  const root = document.documentElement;
+  try { const t = localStorage.getItem('theme'); if (t) root.dataset.theme = t; } catch (e) {}
+  $('theme').onclick = () => {
+    const dark = (root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    if (state.result) drawChart();
+  };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => state.result && drawChart());
+
+  // ---- controls ----
+  document.querySelectorAll('[data-algo]').forEach((b) => b.onclick = () => {
+    state.algo = b.dataset.algo;
+    document.querySelectorAll('[data-algo]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  });
+  document.querySelectorAll('[data-view]').forEach((b) => b.onclick = () => {
+    state.view = b.dataset.view;
+    document.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    drawChart();
+  });
+  $('dice').onclick = () => { $('seed').value = Math.floor(Math.random() * 1000000); };
+
+  // ---- worker ----
+  const worker = new Worker('worker.js', { type: 'module' });
+  const setStatus = (text, pct, error) => {
+    $('status').classList.add('on');
+    $('statusText').textContent = text;
+    $('statusText').className = error ? 'err' : '';
+    const bar = $('bar');
+    bar.classList.toggle('indeterminate', pct == null);
+    bar.firstElementChild.style.width = pct == null ? '' : pct + '%';
+  };
+  worker.onmessage = (e) => {
+    const m = e.data;
+    if (m.type === 'status') setStatus(m.text + ' (first visit downloads about 25 MB, then it is cached)');
+    else if (m.type === 'ready') { state.ready = true; $('run').disabled = false; $('status').classList.remove('on'); }
+    else if (m.type === 'progress') setStatus(`Generation ${m.gen} of ${m.total}`, Math.round(100 * m.gen / m.total));
+    else if (m.type === 'result') onResult(JSON.parse(m.json), m.seconds);
+    else if (m.type === 'error') {
+      state.running = false;
+      setStatus('Error: ' + m.message, 0, true);
+      $('run').disabled = !!m.fatal;
+    }
+  };
+  worker.onerror = (e) => setStatus('The worker failed to start: ' + (e.message || 'unknown error'), 0, true);
+  if (typeof WebAssembly === 'undefined') setStatus('This browser does not support WebAssembly, which the demo needs.', 0, true);
+
+  $('run').onclick = () => {
+    if (!state.ready || state.running) return;
+    let seed = parseInt($('seed').value, 10);
+    if (!(seed >= 0 && seed <= 999999)) { seed = 42; $('seed').value = 42; }
+    state.running = true;
+    $('run').disabled = true;
+    setStatus('Starting…', 0);
+    worker.postMessage({ type: 'run', user: Number($('user').value), algo: state.algo, seed, popSize: 100, nGen: 50 });
+  };
+
+  // ---- results ----
+  const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+  function onResult(r, seconds) {
+    state.running = false;
+    $('run').disabled = false;
+    $('status').classList.remove('on');
+    state.result = r;
+    window.__demoResult = r;            // exposed for the parity check
+    state.selected = r.best_index != null ? r.best_index : 0;
+    $('tHv').textContent = fmt(r.hypervolume);
+    $('tN').textContent = r.n_solutions;
+    $('tOk').textContent = `${r.n_compliant} / ${r.n_solutions}`;
+    $('tT').textContent = seconds.toFixed(1) + ' s';
+    $('results').hidden = false;
+    drawChart();
+    drawMenu();
+  }
+
+  const AX = { pref: 'Preference (penalised)', cost: 'Cost (penalised)', time: 'Time, min (penalised)' };
+
+  function drawChart() {
+    const r = state.result; if (!r || !window.Plotly) return;
+    const S = r.solutions;
+    const pts = S.map((s, i) => ({ i, p: -s.F[0], c: s.F[1], t: s.F[2], s }));
+    const hover = (q) => `Solution ${q.i + 1}<br>Preference ${q.s.preference.toFixed(2)} · Cost ${q.s.cost.toFixed(2)} · ${q.s.time.toFixed(0)} min<br>` +
+      `Penalised: ${q.p.toFixed(2)} / ${q.c.toFixed(2)} / ${q.t.toFixed(1)}<br>${q.s.compliant ? 'Inside all DRI bounds' : 'Violates a DRI bound'}<extra></extra>`;
+    const ink = css('--ink'), muted = css('--muted'), line = css('--line');
+    const three = state.view === '3d';
+    const yKey = state.view === 'time' ? 't' : 'c';
+    const mk = (list, color, symbol, size, name) => {
+      const base = { mode: 'markers', name, customdata: list.map((q) => q.i), hovertemplate: list.map(hover), x: list.map((q) => q.p),
+        marker: { color, size, symbol, line: { width: 1, color: css('--card') } } };
+      return three ? { ...base, type: 'scatter3d', y: list.map((q) => q.c), z: list.map((q) => q.t), marker: { ...base.marker, size: size - 2, symbol: symbol === 'diamond' ? 'diamond' : 'circle' } }
+                   : { ...base, type: 'scatter', y: list.map((q) => q[yKey]) };
+    };
+    const best = r.best_index;
+    const sel = state.selected;
+    const bad = pts.filter((q) => !q.s.compliant);
+    const ok = pts.filter((q) => q.s.compliant && q.i !== best);
+    const traces = [mk(bad, css('--pt-other'), 'circle', 9, 'Violates a bound'), mk(ok, css('--pt-ok'), 'diamond', 11, 'Inside all DRI bounds')];
+    if (best != null) traces.push(mk([pts[best]], css('--pt-best'), 'diamond', 16, 'Best compliant menu'));
+    if (sel != null && sel !== best) {
+      const t = mk([pts[sel]], 'rgba(0,0,0,0)', 'circle', 18, 'Selected');
+      t.marker = { ...t.marker, color: 'rgba(0,0,0,0)', line: { width: 3, color: ink } };
+      t.hoverinfo = 'skip'; delete t.hovertemplate;
+      traces.push(t);
+    }
+    const axis = (title) => ({ title: { text: title, font: { color: muted, size: 12 } }, color: muted, gridcolor: line, zerolinecolor: line, tickfont: { color: muted, size: 11 } });
+    const layout = {
+      paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { color: ink },
+      margin: three ? { l: 0, r: 0, t: 0, b: 0 } : { l: 56, r: 10, t: 8, b: 48 },
+      showlegend: false, hovermode: 'closest', hoverlabel: { font: { size: 12 } },
+    };
+    if (three) layout.scene = { xaxis: axis(AX.pref), yaxis: axis(AX.cost), zaxis: axis(AX.time), camera: { eye: { x: 1.6, y: -1.6, z: 0.9 } } };
+    else { layout.xaxis = axis(AX.pref); layout.yaxis = axis(state.view === 'time' ? AX.time : AX.cost); }
+    Plotly.react('chart', traces, layout, { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage'] }).then((gd) => {
+      gd.removeAllListeners && gd.removeAllListeners('plotly_click');
+      gd.on('plotly_click', (ev) => {
+        const p = ev.points && ev.points[0]; if (!p || p.customdata == null) return;
+        state.selected = p.customdata; drawMenu(); drawChart();
+      });
+    });
+  }
+
+  function el(tag, props, ...kids) {
+    const n = document.createElement(tag);
+    Object.assign(n, props || {});
+    kids.forEach((k) => n.append(k));
+    return n;
+  }
+
+  function drawMenu() {
+    const r = state.result; if (!r) return;
+    const card = $('menuCard');
+    card.replaceChildren();
+    const i = state.selected;
+    if (i == null) {
+      card.append(el('h3', {}, 'No fully compliant menu'), el('p', { className: 'hint' }, 'None of the Pareto menus in this run is inside every nutrient bound. Try another seed.'));
+      return;
+    }
+    const s = r.solutions[i];
+    const isBest = i === r.best_index;
+    const head = el('div', { className: 'menuhead' },
+      el('h3', {}, isBest ? '⭐ Best compliant menu' : `Menu ${i + 1}`),
+      el('span', { className: 'badge ' + (s.compliant ? 'ok' : 'bad') }, s.compliant ? '✓ Meets every DRI bound' : '✗ Violates a DRI bound'));
+    const fact = (v, k) => el('div', {}, el('b', {}, v), el('span', {}, k));
+    const facts = el('div', { className: 'facts' }, fact(s.preference.toFixed(2), 'PREFERENCE'), fact(s.cost.toFixed(2), 'COST'),
+      fact(`${s.time.toFixed(0)} min`, 'PREP + COOK TIME'), fact(String(s.n_groups), 'FOOD GROUPS'));
+    const list = (title, items) => el('div', {}, el('h4', {}, title), el('ul', {}, ...items.map((x) => el('li', {}, x))));
+    const cols = el('div', { className: 'cols' }, list('Breakfast', s.breakfast), list('Lunch / dinner', s.lunch_dinner));
+    const nut = el('div', { className: 'nut' });
+    ['Energy', 'Protein', 'Carbohydrate', 'Fiber_total_dietary', 'Na'].filter((k) => r.dri[k]).forEach((key) => {
+      const { RLL, RUL } = r.dri[key]; const v = s.nutrients[key] || 0;
+      const [label, unit] = NUTRIENT_LABELS[key] || [key, ''];
+      const open = RUL >= 9000;
+      const max = open ? Math.max(RLL * 2, v * 1.1) : RUL * 1.25;
+      const pct = (x) => Math.max(0, Math.min(100, (x / max) * 100));
+      const ok = v >= RLL && v <= RUL;
+      const gauge = el('div', { className: 'gauge' + (ok ? '' : ' out'), title: open ? `at least ${RLL}` : `${RLL} to ${RUL}` });
+      gauge.append(el('div', { className: 'rng', style: `left:${pct(RLL)}%;width:${pct(open ? max : RUL) - pct(RLL)}%` }), el('div', { className: 'dot', style: `left:${pct(v)}%` }));
+      const range = open ? `≥ ${fmt(RLL)}` : `${fmt(RLL)} – ${fmt(RUL)}`;
+      nut.append(el('div', { className: 'nrow' },
+        el('div', { className: 'name' }, (ok ? '✓ ' : '✗ ') + label),
+        el('div', { className: 't' }, `${fmt(v, 1)} ${unit} `, el('small', {}, `(target ${range})`)), gauge));
+    });
+    // grid: name | text, gauge below text: restructure rows so the gauge sits under the value text
+    card.append(head, facts, cols, el('h4', { style: 'margin:16px 0 0;font-size:.8rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase' }, 'Nutrients vs DRI'), nut,
+      el('p', { className: 'hint' }, 'Food names are the original Turkish dataset names. A food can repeat in a menu because the encoding is not a strict permutation (a documented limitation of the project).'));
+  }
+
+  // ---- download ----
+  const dl = el('button', { className: 'linklike', type: 'button' }, 'Download this run as JSON');
+  dl.onclick = () => {
+    if (!state.result) return;
+    const r = state.result;
+    const a = el('a', { href: URL.createObjectURL(new Blob([JSON.stringify(r)], { type: 'application/json' })), download: `diet_user${r.user_id}_${r.algorithm}_seed${r.seed}.json` });
+    a.click(); URL.revokeObjectURL(a.href);
+  };
+  document.querySelector('#results .tiles').after(el('p', { className: 'hint', style: 'text-align:right' }, dl));
+})();
+</script>
+</body>
+</html>
