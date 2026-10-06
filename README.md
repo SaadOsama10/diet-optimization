@@ -22,7 +22,7 @@ Recommends daily menus from 405 food items and returns a Pareto front of prefere
 
 [**Open the demo →**](https://saadosama10.github.io/diet-optimization/demo/) Pick a user profile, NSGA-II or SPEA2 and a seed, press **Run**, and explore the Pareto front (3D or 2D), the hypervolume, the number of fully DRI-compliant menus and the best compliant menu. There is no server: the repository's own Python code (`src/`, the SQLite backend, pymoo 0.6.1.6) runs in your browser through [Pyodide](https://pyodide.org) in a Web Worker. A run (population 100, 50 generations, same as `main.py`) takes about 3 s on a laptop after a one-time ~25 MB download of the Python runtime.
 
-**What is and is not identical to the desktop code.** `src/` and `data/` are used unchanged. Two things differ, neither affects results: (1) pymoo's compiled helpers (`moocore` for hypervolume, a terminal progress bar) cannot run in WebAssembly, so `docs/demo/shims/` provides a pure-Python exact hypervolume and a stub; (2) the original code never passes a seed to pymoo, so `docs/demo/runner.py` injects one (by wrapping `minimize`) to make runs repeatable.
+**What is and is not identical to the desktop code.** `src/` and `data/` are used as they are in the repo. Two things differ, neither affects results: (1) pymoo's compiled helpers (`moocore` for hypervolume, a terminal progress bar) cannot run in WebAssembly, so `docs/demo/shims/` provides a pure-Python exact hypervolume and a stub; (2) `docs/demo/runner.py` is a thin driver that calls the same `run_nsga2` / `run_spea2` with the same `seed` argument that `main.py` uses, so the demo with seed 42 reproduces the results above.
 
 **Parity check.** [`scripts/demo_parity.py`](scripts/demo_parity.py) compares the browser with the original code under CPython (pymoo 0.6.1.6, compiled helpers) for 2 users × 2 algorithms × 2 seeds. On the live site all 8 cases are identical: every one of the 100 × 3 Pareto objective values (max difference 0.0), every decoded menu, the DRI-compliant count and the best menu; hypervolume agrees to ≤ 5.3e-16 relative (floating-point rounding).
 
@@ -84,18 +84,18 @@ data/*.csv ──► SQLite (or MySQL) ──► DietProblem ──► NSGA-II /
 
 ## Results
 
-Single run of `python main.py` (population 100, 50 generations, ~10 s on a laptop). The raw outputs are in [`results/`](results/). Objective values in the plots and CSVs include the penalty term `R`; the menu tables show the raw preference, cost and time of the decoded menu.
+Run of `python main.py` with the default seed 42 (population 100, 50 generations, ~10 s on a laptop). The run is reproducible: the same seed gives identical results (`python main.py --seed 7` or `SEED=7 python main.py` for another). The raw outputs are in [`results/`](results/). Objective values in the plots and CSVs include the penalty term `R`; the menu tables show the raw preference, cost and time of the decoded menu.
 
 | User | Algorithm | Pareto solutions | Final hypervolume* | Solutions inside all strict DRI bounds |
 |---|---|---|---|---|
-| 1 (non-vegetarian) | NSGA-II | 100 | 127,026,596 | 6 / 100 |
-| 1 (non-vegetarian) | SPEA2 | 100 | 129,883,896 | 10 / 100 |
-| 2 (vegetarian) | NSGA-II | 100 | 183,210,195 | 7 / 100 |
-| 2 (vegetarian) | SPEA2 | 100 | 175,587,230 | 7 / 100 |
+| 1 (non-vegetarian) | NSGA-II | 100 | 120,204,236 | 12 / 100 |
+| 1 (non-vegetarian) | SPEA2 | 100 | 120,322,730 | 16 / 100 |
+| 2 (vegetarian) | NSGA-II | 100 | 170,956,583 | 3 / 100 |
+| 2 (vegetarian) | SPEA2 | 100 | 176,831,638 | 7 / 100 |
 
 \* Reference point `[0, 1000, 1000]` on (−preference, cost, time). Both sample users in the dataset are 25-year-old women (DRI bounds: 2000–2400 kcal, 40–100 g protein, 170–300 g carbohydrate, ≥ 20 g fibre, 1500–2300 mg sodium).
 
-The runs are not seeded, so numbers vary from run to run. Across repeated runs of this code, the order of NSGA-II and SPEA2 by hypervolume changed, so these results do not show that one algorithm is better.
+This is a single seed. With the earlier unseeded code the order of NSGA-II and SPEA2 by hypervolume changed between repeated runs, so one seed does not show that either algorithm is better; compare several seeds before drawing conclusions.
 
 **Pareto fronts** (preference vs cost, preference vs time):
 
@@ -114,19 +114,20 @@ The runs are not seeded, so numbers vary from run to run. Across repeated runs o
 **Example recommended menu** — the highest-preference NSGA-II solution for user 1 that satisfies every DRI bound (food names are the original Turkish dataset names):
 
 ```
-Preference: 93.30 | Cost: 26.45 | Time: 170 min | Food groups: 8
+Preference: 138.40 | Cost: 40.93 | Time: 445 min | Food groups: 11
 
-Breakfast:  FINDIK EZMESİ, ERİK, KURU KAYISI, PORTAKAL SUYU, KARPUZ, KARPUZ,
-            INCİR REÇELİ, ÜZÜM PEKMEZİ, GREYFURT SUYU
-Lunch/Dinner: HAVUÇ-TURP SALATASI LD, HAYDARİ, TEL ŞEHRİYE ÇORBASI,
-              SEMİZOTU SALATASI LD, HASANPAŞA KÖFTE
+Breakfast:  INCİR REÇELİ, KİRAZ, BEYAZ PEYNIR, INCİR REÇELİ, AYVA, INCİR REÇELİ,
+            INCİR REÇELİ, ÜZÜM PEKMEZİ, LOR PEYNİRİ, FINDIK EZMESİ,
+            HAVUÇ SUYU LD, PORTAKAL SUYU
+Lunch/Dinner: ALİ PAŞA PİLAVI, CACIK, KREMALI DOMATES ÇORBASI, ZEYTİNYAĞLI SEMİZOTU,
+              KREMALI MANTAR ÇORBASI, ANDALOZ ÇORBASI, SALÇALI HİNDİ BİFTEK
 
 Nutrient          Total      RLL      RUL
-Energy           2293.7   2000.0   2400.0   ok
-Protein            78.1     40.0    100.0   ok
-Carbohydrate      276.0    170.0    300.0   ok
-Fiber              22.8     20.0   9999.0   ok
-Sodium           1642.4   1500.0   2300.0   ok
+Energy           2199.1   2000.0   2400.0   ok
+Protein            93.8     40.0    100.0   ok
+Carbohydrate      250.1    170.0    300.0   ok
+Fiber              26.8     20.0   9999.0   ok
+Sodium           2191.8   1500.0   2300.0   ok
 ```
 
 More menus: [`results/example_menu_user1.txt`](results/example_menu_user1.txt), [`results/example_menu_user2.txt`](results/example_menu_user2.txt), [`results/sample_menus_user1.txt`](results/sample_menus_user1.txt), [`results/sample_menus_user2.txt`](results/sample_menus_user2.txt).
@@ -188,14 +189,14 @@ Database settings are read from environment variables or a `.env` file; no crede
 - **Bug fix: cost and time were being maximized.** `evaluate()` returns all objectives in maximize form, but only preference was negated before pymoo (which minimizes) saw them, so cost and time were maximized and their penalty was rewarded. All three are now minimized correctly (`fix: cost and time were being maximized` commit). The numbers in the original course report (`docs/MODP_Report.pdf`) come from the earlier, buggy version and are not comparable; all results in this README are from the corrected code.
 - Database credentials moved out of the code into environment variables; SQLite backend added so the project runs without MySQL.
 - Sanitized dataset published; reproducible setup with requirements files and a tested fresh-clone run.
+- Reproducible runs: `main.py --seed N` (or `SEED=N`, default 42) is passed to pymoo's `minimize`.
 - Headless-safe plotting, automatic `results/` creation, and saved summaries/menus.
 - Student numbers redacted from the report PDF.
 
 ## Known Limitations
 
-- **Soft constraints.** In this run only 6–10 of the 100 Pareto solutions fall inside every strict DRI bound; the rest violate at least one bound the bounds (the decoder tolerates ×0.90 / ×1.15 on the daily bounds).
+- **Soft constraints.** In the seed-42 run only 3–16 of the 100 Pareto solutions fall inside every strict DRI bound; the rest violate at least one bound (the decoder tolerates ×0.90 / ×1.15 on the daily bounds).
 - **Not a true permutation encoding.** Genes are real-coded, cast to integers and wrapped with `mod`, so duplicates can occur (a food can appear twice in one menu).
-- **Runs are not seeded** in `main.py`, so results differ between runs and the algorithm comparison is inconclusive. (The live demo adds an optional seed so a run can be repeated.)
 - **Only two example users** (both 25-year-old women) are evaluated; the dataset contains 125.
 - **Penalised objective values.** Plotted/exported objective values include the penalty term; the menu tables show the raw values.
 - **Food names are Turkish** and are not translated in the code output.
