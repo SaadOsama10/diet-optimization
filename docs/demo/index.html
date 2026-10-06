@@ -60,12 +60,12 @@ select, input[type=number] { width: 100%; height: 44px; border-radius: 10px; bor
 @media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
 .tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: var(--shadow); min-width: 0; }
 .tile .k { font-size: .75rem; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
-.tile .v { font-size: 1.45rem; font-weight: 750; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tile .v { font-size: clamp(1.1rem, 5vw, 1.45rem); font-weight: 750; margin-top: 2px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .tile .n { font-size: .75rem; color: var(--muted); }
 #results[hidden] { display: none; }
 .charthead { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .charthead .seg { max-width: 100%; }
-.charthead .seg button { padding: 0 12px; height: 38px; font-size: .88rem; white-space: nowrap; }
+.charthead .seg button { padding: 0 10px; height: 38px; font-size: .88rem; white-space: nowrap; }
 #chart { width: 100%; height: 440px; }
 @media (max-width: 600px) { #chart { height: 360px; } }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .82rem; color: var(--muted); margin-top: 6px; }
@@ -118,8 +118,8 @@ button.linklike { background: none; border: 0; color: var(--accent); padding: 0;
       <div>
         <label for="user">User profile</label>
         <select id="user">
-          <option value="1">User 1: 25-year-old woman, omnivore</option>
-          <option value="2">User 2: 25-year-old woman, vegetarian</option>
+          <option value="1">User 1 (omnivore, 25 y)</option>
+          <option value="2">User 2 (vegetarian, 25 y)</option>
         </select>
       </div>
       <div>
@@ -158,8 +158,8 @@ button.linklike { background: none; border: 0; color: var(--accent); padding: 0;
         <h2 id="chh" style="margin:0">Pareto front</h2>
         <div class="seg" role="group" aria-label="Chart view">
           <button type="button" data-view="3d" aria-pressed="true">3D</button>
-          <button type="button" data-view="cost" aria-pressed="false">Preference vs cost</button>
-          <button type="button" data-view="time" aria-pressed="false">Preference vs time</button>
+          <button type="button" data-view="cost" aria-pressed="false">Pref. vs cost</button>
+          <button type="button" data-view="time" aria-pressed="false">Pref. vs time</button>
         </div>
       </div>
       <div id="chart" role="img" aria-label="Interactive Pareto front scatter plot"></div>
