@@ -69,7 +69,7 @@ class DietProblem(Problem):
         out["F"] = np.array(F)
 
 
-def run_spea2(user_id, pop_size=100, n_gen=200, track_hv=False, alpha=1.0):
+def run_spea2(user_id, pop_size=100, n_gen=200, track_hv=False, alpha=1.0, seed=None):
     problem = DietProblem(user_id, alpha=alpha)
     ref_point = np.array([0.0, 1000.0, 1000.0])
     callback = HVCallback(ref_point) if track_hv else None
@@ -80,6 +80,7 @@ def run_spea2(user_id, pop_size=100, n_gen=200, track_hv=False, alpha=1.0):
         problem,
         algorithm,
         termination=('n_gen', n_gen),
+        seed=seed,
         verbose=True,
         **({"callback": callback} if callback is not None else {})
     )

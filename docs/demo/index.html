@@ -182,7 +182,7 @@ button.linklike { background: none; border: 0; color: var(--accent); padding: 0;
       <li><b>Search.</b> Each candidate is a priority ordering of foods, turned into a menu by a greedy decoder. <b>NSGA-II</b> (non-dominated sorting + crowding distance) or <b>SPEA2</b> (strength Pareto + density estimation) evolves 100 candidates for 50 generations.</li>
       <li><b>Result.</b> The final non-dominated set is the Pareto front: no menu is better on all three goals than another. <b>Hypervolume</b> measures how much objective space the front covers (larger is better), and the card shows the highest-preference menu that satisfies every nutrient bound.</li>
       <li><b>In your browser.</b> The project's own <code>src/</code> code and its SQLite database run in <a href="https://pyodide.org">Pyodide</a> (Python compiled to WebAssembly) inside a Web Worker, so this page stays responsive. pymoo 0.6.1.6 runs unmodified apart from two stand-ins: a pure-Python exact hypervolume replacing the compiled <code>moocore</code>, and a stub for a terminal progress bar. Results match the desktop Python run for the same seed (see the parity check in the repository).</li>
-      <li><b>Seed.</b> The original scripts do not seed the random generator, so every desktop run differs. The demo adds a seed (passed to pymoo's <code>minimize</code>) purely so a run can be repeated.</li>
+      <li><b>Seed.</b> The seed is passed to pymoo's <code>minimize</code>, exactly as <code>main.py --seed</code> does, so the demo with seed 42 reproduces the results in the README.</li>
     </ol>
   </section>
 

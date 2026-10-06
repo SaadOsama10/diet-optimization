@@ -1,16 +1,11 @@
 """Thin driver for the live demo and the parity check.
 
-It calls the repository's own run_nsga2 / run_spea2 / get_sample_menus unchanged. The only
-addition is seeding: the original code calls pymoo's minimize() without a seed (so every run
-differs). To make runs reproducible without editing src/, the seed is injected by wrapping the
-`minimize` name that src/algorithms/*.py imported; nothing else about the call changes.
-
-The same file runs under CPython (parity reference) and inside Pyodide (the browser demo).
+It calls the repository's own run_nsga2 / run_spea2 / get_sample_menus with the given seed (the same
+`seed` argument main.py passes), then packages the result as JSON. The same file runs under CPython
+(parity reference) and inside Pyodide (the browser demo).
 """
 import json
 
-import src.algorithms.nsga2 as _nsga2
-import src.algorithms.spea2 as _spea2
 from src.algorithms.nsga2 import run_nsga2
 from src.algorithms.spea2 import run_spea2
 from src.database import get_user_dri
@@ -19,17 +14,9 @@ from src.menu_table import get_sample_menus
 ALGORITHMS = {"nsga2": run_nsga2, "spea2": run_spea2}
 
 
-def _seed_minimize(module, seed):
-    original = getattr(module, "_unseeded_minimize", module.minimize)
-    module._unseeded_minimize = original
-    module.minimize = lambda *args, **kwargs: original(*args, seed=seed, **kwargs)
-
-
 def run(user_id, algorithm, seed, pop_size=100, n_gen=50):
     user_id, seed, pop_size, n_gen = int(user_id), int(seed), int(pop_size), int(n_gen)
-    _seed_minimize(_nsga2, seed)
-    _seed_minimize(_spea2, seed)
-    res, hv_history = ALGORITHMS[algorithm](user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True)
+    res, hv_history = ALGORITHMS[algorithm](user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, seed=seed)
 
     dri = get_user_dri(user_id)
     menus = get_sample_menus(res, res.problem, n_samples=len(res.X))

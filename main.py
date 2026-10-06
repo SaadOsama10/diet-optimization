@@ -1,3 +1,4 @@
+import argparse
 import contextlib
 import csv
 import os
@@ -98,14 +99,14 @@ def dri_compliant_menus(res, dri):
     return ok, len(menus)
 
 
-def run_experiment(user_id, pop_size=100, n_gen=50):
+def run_experiment(user_id, pop_size=100, n_gen=50, seed=None):
     print(f"\n=== Experiment 1 & 2 - User {user_id} ===")
 
     print("Running NSGA-II...")
-    res_nsga2, hv_nsga2 = run_nsga2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True)
+    res_nsga2, hv_nsga2 = run_nsga2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, seed=seed)
 
     print("Running SPEA2...")
-    res_spea2, hv_spea2 = run_spea2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True)
+    res_spea2, hv_spea2 = run_spea2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, seed=seed)
 
     plot_pareto(res_nsga2, res_spea2, user_id)
     plot_hypervolume(hv_nsga2, hv_spea2, user_id)
@@ -134,14 +135,14 @@ def run_experiment(user_id, pop_size=100, n_gen=50):
     return res_nsga2, res_spea2
 
 
-def run_diversity_experiment(user_id, pop_size=100, n_gen=50):
+def run_diversity_experiment(user_id, pop_size=100, n_gen=50, seed=None):
     print(f"\n=== Experiment 3 - Diversity Impact - User {user_id} ===")
 
     print("Running NSGA-II with diversity...")
-    res_with, _ = run_nsga2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, alpha=1.0)
+    res_with, _ = run_nsga2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, alpha=1.0, seed=seed)
 
     print("Running NSGA-II without diversity...")
-    res_without, _ = run_nsga2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, alpha=0.0)
+    res_without, _ = run_nsga2(user_id=user_id, pop_size=pop_size, n_gen=n_gen, track_hv=True, alpha=0.0, seed=seed)
 
     plot_diversity_comparison(res_with, res_without, user_id)
 
@@ -152,9 +153,22 @@ def run_diversity_experiment(user_id, pop_size=100, n_gen=50):
     log(f"[User {user_id}] Diversity experiment, NSGA-II without diversity (alpha=0.0): {len(res_without.F)} solutions")
 
 
+DEFAULT_SEED = 42
+
+
+def parse_seed():
+    """Seed from --seed, else the SEED environment variable, else 42. Every run uses the same seed."""
+    parser = argparse.ArgumentParser(description="Run all experiments and write results/.")
+    parser.add_argument("--seed", type=int, default=int(os.environ.get("SEED", DEFAULT_SEED)),
+                        help="random seed passed to pymoo's minimize (default: env SEED, else 42)")
+    return parser.parse_args().seed
+
+
 if __name__ == "__main__":
+    seed = parse_seed()
     os.makedirs('results', exist_ok=True)
     open('results/summary.txt', 'w').close()
-    run_experiment(user_id=1, pop_size=100, n_gen=50)
-    run_experiment(user_id=2, pop_size=100, n_gen=50)
-    run_diversity_experiment(user_id=1, pop_size=100, n_gen=50)
+    log(f"Random seed: {seed}")
+    run_experiment(user_id=1, pop_size=100, n_gen=50, seed=seed)
+    run_experiment(user_id=2, pop_size=100, n_gen=50, seed=seed)
+    run_diversity_experiment(user_id=1, pop_size=100, n_gen=50, seed=seed)
